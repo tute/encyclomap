@@ -2,107 +2,78 @@
 
 Data =
   coords: { 'latitude': 40.7142, 'longitude': -74.0064 }
-  polygons: {}
+  infoWindow: new google.maps.InfoWindow()
+  wikimapia_places: []
+  gmaps_polygons: {}
 
-  geolozalize: ->
-    navigator.geolocation.getCurrentPosition Map.draw
 
-  highlight: (pol_id, opacity = 0.25) ->
-    @polygons[pol_id].polygon.setOptions { 'fillOpacity': opacity }
+# Perform geolocalization, or fallback to default coordinates
+Geolocalize =
+  start: ->
+    if navigator.geolocation
+      navigator.geolocation.getCurrentPosition @success, @error
+    else
+      @error({ 'code': 'NOT_SUPPORTED' })
+
+  success: (position) ->
+    GMap.updateCoords position.coords
+
+  error: (error) ->
+    # error.code.{PERMISSION_DENIED|POSITION_UNAVAILABLE|TIMEOUT|UNKNOWN_ERROR}
+    GMap.updateCoords Data.coords
 
 
 Helpers =
-  infoWindow: new google.maps.InfoWindow()
-
   showInfoWindow: (title, latLng) ->
-    Helpers.infoWindow.setContent title
-    Helpers.infoWindow.setPosition latLng
-    Helpers.infoWindow.open Map.map_el
+    Data.infoWindow.setContent title
+    Data.infoWindow.setPosition latLng
+    Data.infoWindow.open GMap.map_el
+
+  highlight: (pol_id, opacity = 0.25) ->
+    Data.gmaps_polygons[pol_id].polygon.setOptions { 'fillOpacity': opacity }
 
   setPlaceEvents: ->
-    $(document).on(
-      'mouseenter',
-      'ul#places li',
-      () ->
-        $(this).attr('style', 'font-weight:bold')
-        javascript:Data.highlight($(this).attr('id'), 0.75)
+    $(document).on('mouseenter', 'ul#places li', ->
+      $(this).attr('style', 'font-weight:bold')
+      javascript:Helpers.highlight($(this).attr('id'), 0.75)
     )
-    $(document).on(
-      'mouseleave',
-      'ul#places li',
-      () ->
-        $(this).attr('style', 'font-weight:normal')
-        javascript:Data.highlight($(this).attr('id'))
+    $(document).on('mouseleave', 'ul#places li', ->
+      $(this).attr('style', 'font-weight:normal')
+      javascript:Helpers.highlight($(this).attr('id'))
     )
 
-  iterateWikimapia: ->
-    content = ''
-    for place in Wikimapia.places.folder
-      pol_id = 'pol_' + place.id
 
-      content += '<li id="' + pol_id + '"><a href="' + place.url + '" target="_blank">' + place.name + '</a></li>'
+GMap =
+  map_el: null
+  marker: null
 
-      points = []
-      place.polygon.push(place.polygon[0]) # Close polygon
-      for point in place.polygon
-        points.push(new google.maps.LatLng(point.y, point.x))
-
-      polygon = new google.maps.Polygon(
-        paths: points
-        map: Map.map_el
-        strokeColor: "#FF0000"
-        strokeOpacity: 0.8
-        strokeWeight: 2
-        fillColor: "#FF0000"
-        fillOpacity: 0.25
-      )
-      Data.polygons[pol_id] = {
-        title: place.name,
-        polygon: polygon
-      }
-
-      google.maps.event.addListener(polygon, 'click', (event) ->
-        Helpers.showInfoWindow place.name, event.latLng
-      );
-
-    document.getElementById('places').innerHTML = content
-    Helpers.setPlaceEvents()
-
-
-Map =
-  map_el: undefined
-  marker: undefined
+  draw: ->
+    return if GMap.map_el
+    GMap.map_el = new google.maps.Map(document.getElementById('map_canvas'),
+      zoom: 16
+      mapTypeId: google.maps.MapTypeId.ROADMAP
+      center: GMap.current_location()
+    )
+    GMap.marker = new google.maps.Marker(
+      position: GMap.current_location()
+      draggable: true
+      map: GMap.map_el
+    )
+    google.maps.event.addListener(GMap.marker, 'dragend', ->
+      position = GMap.marker.getPosition()
+      GMap.updateCoords { 'latitude': position.Ya, 'longitude': position.Za }
+    )
 
   current_location: ->
     new google.maps.LatLng(Data.coords.latitude, Data.coords.longitude)
 
-  draw: (position) ->
-    Map.updateCoords(position.coords)
-
-    Map.map_el = new google.maps.Map(document.getElementById('map_canvas'),
-      zoom: 16
-      mapTypeId: google.maps.MapTypeId.ROADMAP
-      center: Map.current_location()
-    )
-    Map.marker = new google.maps.Marker(
-      position: Map.current_location()
-      draggable: true
-      map: Map.map_el
-    )
-    google.maps.event.addListener(Map.marker, 'dragend', () ->
-      position = Map.marker.getPosition()
-      console.log position
-      Map.updateCoords { 'latitude': position.Ya, 'longitude': position.Za }
-    )
-
-
   updateCoords: (coords) ->
     Data.coords = coords
-    Wikimapia.bringPlaces()
-    if Map.marker
-      Map.marker.setPosition(Map.current_location())
-      Map.map_el.setCenter(Map.marker.getPosition())
-      Map.map_el.setZoom(16)
+    Wikimapia.getPlaces()
+    if GMap.marker
+      GMap.marker.setPosition(GMap.current_location())
+      GMap.map_el.setCenter(GMap.marker.getPosition())
+      GMap.map_el.setZoom(16)
 
 
 Wikimapia =
@@ -116,12 +87,39 @@ Wikimapia =
     '&lon_max=' + String(Data.coords.longitude + radius) +
     '&count=' + String(count)
 
-  bringPlaces: () ->
-    $.getJSON(Wikimapia.url(), ((data) ->
-      Wikimapia.places = data
-      Helpers.iterateWikimapia()
+  getPlaces: ->
+    $.getJSON(@url(), ((data) ->
+      Data.wikimapia_places = data.folder
+      Wikimapia.draw()
     ))
+
+  draw: ->
+    $('#places').html ''
+    for place in Data.wikimapia_places
+      $('#places').append '<li id="pol_' + place.id + '"><a href="' + place.url + '" target="_blank">' + place.name + '</a></li>'
+
+      polygon = new google.maps.Polygon(
+        paths: $.map(place.polygon, (p,i) -> new google.maps.LatLng(p.y, p.x))
+        map: GMap.map_el
+        strokeColor: "#FF0000"
+        strokeOpacity: 0.8
+        strokeWeight: 2
+        fillColor: "#FF0000"
+        fillOpacity: 0.25
+      )
+      Data.gmaps_polygons['pol_' + place.id] = {
+        title: place.name,
+        polygon: polygon
+      }
+
+      # FIXME: Only grabbing last place
+      google.maps.event.addListener(polygon, 'click', (event) ->
+        Helpers.showInfoWindow place.name, event.latLng
+      );
+
+    Helpers.setPlaceEvents()
 
 
 window.onload = ->
-  Data.geolozalize()
+  GMap.draw()
+  Geolocalize.start()
