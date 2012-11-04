@@ -1,7 +1,7 @@
 'use strict'
 
 Data =
-  coords: { 'latitude': 40.7142, 'longitude': 74.0064 }
+  coords: { 'latitude': 40.7142, 'longitude': -74.0064 }
   polygons: {}
 
   geolozalize: ->
@@ -71,6 +71,7 @@ Helpers =
 
 Map =
   map_el: undefined
+  marker: undefined
 
   current_location: ->
     new google.maps.LatLng(Data.coords.latitude, Data.coords.longitude)
@@ -85,8 +86,15 @@ Map =
     )
     Map.marker = new google.maps.Marker(
       position: Map.current_location()
+      draggable: true
       map: Map.map_el
     )
+    google.maps.event.addListener(Map.marker, 'dragend', () ->
+      position = Map.marker.getPosition()
+      console.log position
+      Map.updateCoords { 'latitude': position.Ya, 'longitude': position.Za }
+    )
+
 
   updateCoords: (coords) ->
     Data.coords = coords
