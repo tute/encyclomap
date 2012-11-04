@@ -64,6 +64,28 @@ GMap =
       GMap.updateCoords { 'latitude': position.Ya, 'longitude': position.Za }
     )
 
+  add_polygon_for: (place) ->
+    return if Data.gmaps_polygons['pol_' + place.id]
+
+    polygon = new google.maps.Polygon(
+      paths: $.map(place.polygon, (p,i) -> new google.maps.LatLng(p.y, p.x))
+      map: GMap.map_el
+      strokeColor: "#FF0000"
+      strokeOpacity: 0.8
+      strokeWeight: 2
+      fillColor: "#FF0000"
+      fillOpacity: 0.25
+    )
+    Data.gmaps_polygons['pol_' + place.id] = {
+      title: place.name,
+      polygon: polygon
+    }
+
+    # FIXME: Only grabbing last place
+    google.maps.event.addListener(polygon, 'click', (event) ->
+      Helpers.showInfoWindow place.name, event.latLng
+    );
+
   current_location: ->
     new google.maps.LatLng(Data.coords.latitude, Data.coords.longitude)
 
@@ -97,30 +119,10 @@ Wikimapia =
     $('#places').html ''
     for place in Data.wikimapia_places
       $('#places').append '<li id="pol_' + place.id + '"><a href="' + place.url + '" target="_blank">' + place.name + '</a></li>'
-
-      if !Data.gmaps_polygons['pol_' + place.id]
-        polygon = new google.maps.Polygon(
-          paths: $.map(place.polygon, (p,i) -> new google.maps.LatLng(p.y, p.x))
-          map: GMap.map_el
-          strokeColor: "#FF0000"
-          strokeOpacity: 0.8
-          strokeWeight: 2
-          fillColor: "#FF0000"
-          fillOpacity: 0.25
-        )
-        Data.gmaps_polygons['pol_' + place.id] = {
-          title: place.name,
-          polygon: polygon
-        }
-
-        # FIXME: Only grabbing last place
-        google.maps.event.addListener(polygon, 'click', (event) ->
-          Helpers.showInfoWindow place.name, event.latLng
-        );
-
-    Helpers.setPlaceEvents()
+      GMap.add_polygon_for place
 
 
 window.onload = ->
   GMap.draw()
+  Helpers.setPlaceEvents()
   Geolocalize.start()
