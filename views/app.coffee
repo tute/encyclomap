@@ -24,23 +24,13 @@ Geolocalize =
 
 
 Helpers =
-  showInfoWindow: (title, latLng) ->
-    Data.infoWindow.setContent title
+  showInfoWindow: (place, latLng) ->
+    Data.infoWindow.setContent '<h3>' + place.name + '</h3><a href="' + place.url + '" target="_blank">See in Wikimapia</a>'
     Data.infoWindow.setPosition latLng
     Data.infoWindow.open GMap.map_el
 
   highlight: (pol_id, opacity = 0.25) ->
     Data.gmaps_polygons[pol_id].polygon.setOptions { 'fillOpacity': opacity }
-
-  setPlaceEvents: ->
-    $(document).on('mouseenter', 'ul#places li', ->
-      $(this).attr('style', 'font-weight:bold')
-      javascript:Helpers.highlight($(this).attr('id'), 0.75)
-    )
-    $(document).on('mouseleave', 'ul#places li', ->
-      $(this).attr('style', 'font-weight:normal')
-      javascript:Helpers.highlight($(this).attr('id'))
-    )
 
 
 GMap =
@@ -77,13 +67,16 @@ GMap =
       fillOpacity: 0.25
     )
     Data.gmaps_polygons['pol_' + place.id] = {
-      title: place.name,
+      place:
+        id: place.id
+        name: place.name,
+        url: place.url
       polygon: polygon
     }
 
     # FIXME: Only grabbing last place
     google.maps.event.addListener(polygon, 'click', (event) ->
-      Helpers.showInfoWindow place.name, event.latLng
+      Helpers.showInfoWindow place, event.latLng
     );
 
   current_location: ->
@@ -101,7 +94,7 @@ GMap =
 Wikimapia =
   key: 'C0365FB4-6B9AAA6F-9816D3DE-1ABEA4F3-D50712FD-A634D22B-25FA389F-5608B539'
 
-  url: (count = 30, radius = 0.003) ->
+  url: (count = 40, radius = 0.004) ->
     'http://api.wikimapia.org/?function=box&format=json&key=' + @key +
     '&lat_min=' + String(Data.coords.latitude - radius) +
     '&lat_max=' + String(Data.coords.latitude + radius) +
@@ -116,13 +109,10 @@ Wikimapia =
     ))
 
   draw: ->
-    $('#places').html ''
     for place in Data.wikimapia_places
-      $('#places').append '<li id="pol_' + place.id + '"><a href="' + place.url + '" target="_blank">' + place.name + '</a></li>'
       GMap.add_polygon_for place
 
 
 window.onload = ->
   GMap.draw()
-  Helpers.setPlaceEvents()
   Geolocalize.start()
