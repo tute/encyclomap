@@ -25,7 +25,8 @@ Geolocalize =
 
 Helpers =
   showInfoWindow: (place, latLng) ->
-    Data.infoWindow.setContent '<h3>' + place.name + '</h3><a href="' + place.url + '" target="_blank">See in Wikimapia</a>'
+    Data.infoWindow.setContent '<strong>' + place.name + '</strong><br>' +
+      '<small><a href="' + place.url + '" target="_blank">See in Wikimapia</a></small>'
     Data.infoWindow.setPosition latLng
     Data.infoWindow.open GMap.map_el
 
@@ -48,6 +49,11 @@ GMap =
       position: GMap.current_location()
       draggable: true
       map: GMap.map_el
+    )
+
+    # Click on map or drag marker
+    google.maps.event.addListener(GMap.map_el, 'click', (event) ->
+      GMap.updateCoords { 'latitude': event.latLng.Ya, 'longitude': event.latLng.Za }
     )
     google.maps.event.addListener(GMap.marker, 'dragend', ->
       position = GMap.marker.getPosition()
@@ -74,10 +80,9 @@ GMap =
       polygon: polygon
     }
 
-    # FIXME: Only grabbing last place
     google.maps.event.addListener(polygon, 'click', (event) ->
       Helpers.showInfoWindow place, event.latLng
-    );
+    )
 
   current_location: ->
     new google.maps.LatLng(Data.coords.latitude, Data.coords.longitude)
@@ -94,7 +99,7 @@ GMap =
 Wikimapia =
   key: 'C0365FB4-6B9AAA6F-9816D3DE-1ABEA4F3-D50712FD-A634D22B-25FA389F-5608B539'
 
-  url: (count = 40, radius = 0.004) ->
+  url: (count = 40, radius = 0.0035) ->
     'http://api.wikimapia.org/?function=box&format=json&key=' + @key +
     '&lat_min=' + String(Data.coords.latitude - radius) +
     '&lat_max=' + String(Data.coords.latitude + radius) +

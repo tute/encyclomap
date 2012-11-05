@@ -1,11 +1,9 @@
-%h1 Dynamic atlas
-
-%p
-  <strong>See <a href="javascript:GMap.updateCoords({ 'latitude': -34.6036, 'longitude': -58.3817 })">Buenos Aires centro</a>,
-  <a href="javascript:GMap.updateCoords({ 'latitude': 40.7142, 'longitude': -74.0064 })">New York City</a>
-  or  <a href="javascript:Geolocalize.start()">geolocalize again</a>.</strong>
-
-  %small (Drag the marker to look around.)
+%h1
+  Dynamic atlas
+  %small
+    <strong>See <a href="javascript:GMap.updateCoords({ 'latitude': -34.6036, 'longitude': -58.3817 })">Buenos Aires</a>,
+    <a href="javascript:GMap.updateCoords({ 'latitude': 40.7142, 'longitude': -74.0064 })">NYC</a>
+    or  <a href="javascript:Geolocalize.start()">where you are</a>.</strong>
 
 #map_canvas{ style: 'min-height: 600px' }
 
