@@ -81,6 +81,18 @@ GMap =
       Helpers.showInfoWindow place, event.latLng
     )
 
+  search: ->
+    geocoder = new google.maps.Geocoder()
+    geocoder.geocode
+      address: $('#search_address').val(),
+      (results, status) ->
+        if status is google.maps.GeocoderStatus.OK
+          loc = results[0].geometry.location
+          GMap.updateCoords { 'latitude': loc.lat(), 'longitude': loc.lng() }
+          $('#search_status').html ''
+        else
+          $('#search_status').html 'Not found, please try other search terms.'
+
   currentLocation: ->
     new google.maps.LatLng(Data.coords.latitude, Data.coords.longitude)
 
@@ -96,7 +108,7 @@ GMap =
   setSize: ->
     $('#map_canvas').css
       width: window.innerWidth - 20
-      height: window.innerHeight
+      height: window.innerHeight - 100
 
 
 Wikimapia =
