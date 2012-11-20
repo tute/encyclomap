@@ -3,8 +3,8 @@
 Data =
   coords: { 'latitude': 40.783333, 'longitude': -73.966667 }
   infoWindow: new google.maps.InfoWindow()
-  wikimapia_places: []
-  gmaps_polygons: {}
+  wikimapiaPlaces: []
+  gmapsPolygons: {}
 
 
 # Perform geolocalization, or fallback to default coordinates
@@ -31,7 +31,7 @@ Helpers =
     Data.infoWindow.open GMap.map_el
 
   highlight: (pol_id, opacity = 0.25) ->
-    Data.gmaps_polygons[pol_id].polygon.setOptions { 'fillOpacity': opacity }
+    Data.gmapsPolygons[pol_id].polygon.setOptions { 'fillOpacity': opacity }
 
 
 GMap =
@@ -57,8 +57,8 @@ GMap =
       GMap.updateCoords { 'latitude': event.latLng.Ya, 'longitude': event.latLng.Za }
     )
 
-  add_polygon_for: (place) ->
-    return if Data.gmaps_polygons['pol_' + place.id]
+  addPolygonFor: (place) ->
+    return if Data.gmapsPolygons['pol_' + place.id]
 
     polygon = new google.maps.Polygon(
       paths: $.map(place.polygon, (p,i) -> new google.maps.LatLng(p.y, p.x))
@@ -69,7 +69,7 @@ GMap =
       fillColor: "#FF0000"
       fillOpacity: 0.25
     )
-    Data.gmaps_polygons['pol_' + place.id] = {
+    Data.gmapsPolygons['pol_' + place.id] = {
       place:
         id: place.id
         name: place.name,
@@ -112,13 +112,13 @@ Wikimapia =
 
   getPlaces: ->
     $.getJSON(@url(), ((data) ->
-      Data.wikimapia_places = data.folder
+      Data.wikimapiaPlaces = data.folder
       Wikimapia.draw()
     ))
 
   draw: ->
-    for place in Data.wikimapia_places
-      GMap.add_polygon_for place
+    for place in Data.wikimapiaPlaces
+      GMap.addPolygonFor place
 
 
 window.onload = ->
