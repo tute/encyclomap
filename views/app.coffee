@@ -1,7 +1,7 @@
 'use strict'
 
 Data =
-  coords: { 'latitude': 40.7142, 'longitude': -74.0064 }
+  coords: { 'latitude': 40.783333, 'longitude': -73.966667 }
   infoWindow: new google.maps.InfoWindow()
   wikimapia_places: []
   gmaps_polygons: {}
@@ -26,7 +26,7 @@ Geolocalize =
 Helpers =
   showInfoWindow: (place, latLng) ->
     Data.infoWindow.setContent '<strong>' + place.name + '</strong><br>' +
-      '<small><a href="' + place.url + '" target="_blank">See in Wikimapia</a></small>'
+      '<a href="' + place.url + '" target="_blank">See in Wikimapia</a>'
     Data.infoWindow.setPosition latLng
     Data.infoWindow.open GMap.map_el
 
@@ -37,27 +37,24 @@ Helpers =
 GMap =
   map_el: null
   marker: null
+  defaultZoom: 16
 
   draw: ->
-    return if GMap.map_el
-    GMap.map_el = new google.maps.Map(document.getElementById('map_canvas'),
-      zoom: 16
+    return if @map_el
+    @map_el = new google.maps.Map(document.getElementById('map_canvas'),
+      zoom: @defaultZoom
       mapTypeId: google.maps.MapTypeId.ROADMAP
-      center: GMap.current_location()
+      scrollwheel: false
+      center: @currentLocation()
     )
-    GMap.marker = new google.maps.Marker(
-      position: GMap.current_location()
-      draggable: true
-      map: GMap.map_el
+    @marker = new google.maps.Marker(
+      position: @currentLocation()
+      map: @map_el
     )
 
-    # Click on map or drag marker
+    # Click on map
     google.maps.event.addListener(GMap.map_el, 'click', (event) ->
       GMap.updateCoords { 'latitude': event.latLng.Ya, 'longitude': event.latLng.Za }
-    )
-    google.maps.event.addListener(GMap.marker, 'dragend', ->
-      position = GMap.marker.getPosition()
-      GMap.updateCoords { 'latitude': position.Ya, 'longitude': position.Za }
     )
 
   add_polygon_for: (place) ->
@@ -65,7 +62,7 @@ GMap =
 
     polygon = new google.maps.Polygon(
       paths: $.map(place.polygon, (p,i) -> new google.maps.LatLng(p.y, p.x))
-      map: GMap.map_el
+      map: @map_el
       strokeColor: "#FF0000"
       strokeOpacity: 0.8
       strokeWeight: 2
@@ -84,22 +81,28 @@ GMap =
       Helpers.showInfoWindow place, event.latLng
     )
 
-  current_location: ->
+  currentLocation: ->
     new google.maps.LatLng(Data.coords.latitude, Data.coords.longitude)
 
   updateCoords: (coords) ->
     Data.coords = coords
     Wikimapia.getPlaces()
-    if GMap.marker
-      GMap.marker.setPosition(GMap.current_location())
-      GMap.map_el.setCenter(GMap.marker.getPosition())
-      GMap.map_el.setZoom(16)
+    if @marker
+      @marker.setPosition @currentLocation()
+      @map_el.setCenter @marker.getPosition()
+      @map_el.setZoom @defaultZoom
+
+  # Leave some space for iPhones to move over the page, and not only the map
+  setSize: ->
+    $('#map_canvas').css
+      width: window.innerWidth - 20
+      height: window.innerHeight
 
 
 Wikimapia =
   key: 'C0365FB4-6B9AAA6F-9816D3DE-1ABEA4F3-D50712FD-A634D22B-25FA389F-5608B539'
 
-  url: (count = 40, radius = 0.0035) ->
+  url: (count = 40, radius = 0.0032) ->
     'http://api.wikimapia.org/?function=box&format=json&key=' + @key +
     '&lat_min=' + String(Data.coords.latitude - radius) +
     '&lat_max=' + String(Data.coords.latitude + radius) +
@@ -120,4 +123,6 @@ Wikimapia =
 
 window.onload = ->
   GMap.draw()
+  GMap.setSize()
   Geolocalize.start()
+  $(window).bind 'orientationchange resize', GMap.setSize

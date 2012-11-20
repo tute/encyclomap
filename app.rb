@@ -1,6 +1,6 @@
 class DescribeAround < Sinatra::Base
   get '/' do
-    haml :index, format: :html5
+    erb :index
   end
 
   get '/app.js' do
