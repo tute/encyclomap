@@ -49,12 +49,14 @@ GMap =
     )
     @marker = new google.maps.Marker(
       position: @currentLocation()
+      draggable: true
       map: @map_el
     )
-
-    # Click on map
-    google.maps.event.addListener(GMap.map_el, 'click', (event) ->
-      GMap.updateCoords { 'latitude': event.latLng.Ya, 'longitude': event.latLng.Za }
+    google.maps.event.addListener(GMap.marker, 'dragend', ->
+      position = GMap.marker.getPosition()
+      GMap.updateCoords
+        'latitude': position.lat()
+        'longitude': position.lng()
     )
 
   addPolygonFor: (place) ->
