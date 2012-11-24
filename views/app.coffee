@@ -2,6 +2,7 @@
 
 Data =
   coords: { 'latitude': 40.783333, 'longitude': -73.966667 }
+  cityName: 'New York'
   infoWindow: new google.maps.InfoWindow()
   wikimapiaPlaces: []
   gmapsPolygons: {}
@@ -26,9 +27,13 @@ Geolocalize =
 Helpers =
   showInfoWindow: (place, latLng) ->
     Data.infoWindow.setContent '<strong>' + place.name + '</strong><br>' +
+      '<a href="' + @googleItUrl(place) + '" target="_blank">Google it</a> - ' +
       '<a href="' + place.url + '" target="_blank">See in Wikimapia</a>'
     Data.infoWindow.setPosition latLng
     Data.infoWindow.open GMap.map_el
+
+  googleItUrl: (place) ->
+    'https://www.google.com/search?q=' + place.name + ', ' + Data.cityName
 
   highlight: (pol_id, opacity = 0.25) ->
     Data.gmapsPolygons[pol_id].polygon.setOptions { 'fillOpacity': opacity }
@@ -38,6 +43,7 @@ GMap =
   map_el: null
   marker: null
   defaultZoom: 16
+  geocoder: new google.maps.Geocoder()
 
   draw: ->
     return if @map_el
@@ -45,10 +51,10 @@ GMap =
       zoom: @defaultZoom
       mapTypeId: google.maps.MapTypeId.ROADMAP
       scrollwheel: false
-      center: @currentLocation()
+      center: @latLng()
     )
     @marker = new google.maps.Marker(
-      position: @currentLocation()
+      position: @latLng()
       draggable: true
       map: @map_el
     )
@@ -84,8 +90,7 @@ GMap =
     )
 
   search: ->
-    geocoder = new google.maps.Geocoder()
-    geocoder.geocode
+    @geocoder.geocode
       address: $('#search_address').val(),
       (results, status) ->
         if status is google.maps.GeocoderStatus.OK
@@ -95,16 +100,29 @@ GMap =
         else
           $('#search_status').html 'Not found, please try other search terms.'
 
-  currentLocation: ->
-    new google.maps.LatLng(Data.coords.latitude, Data.coords.longitude)
-
   updateCoords: (coords) ->
     Data.coords = coords
+    @setCity()
     Wikimapia.getPlaces()
     if @marker
-      @marker.setPosition @currentLocation()
+      @marker.setPosition @latLng()
       @map_el.setCenter @marker.getPosition()
       @map_el.setZoom @defaultZoom
+
+  setCity: ->
+    @geocoder.geocode latLng: @latLng(), (results, status) ->
+      if status is google.maps.GeocoderStatus.OK
+        for place in results[0].address_components
+          if GMap.isCity(place['types'][0])
+            Data.cityName = place['long_name']
+            return
+          null
+
+  latLng: ->
+    new google.maps.LatLng(Data.coords.latitude, Data.coords.longitude)
+
+  isCity: (placeType) ->
+    placeType == 'administrative_area_level_1' || placeType == 'locality'
 
   # Leave some space for iPhones to move over the page, and not only the map
   setSize: ->
