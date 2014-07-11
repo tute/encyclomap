@@ -1,3 +1,5 @@
+require 'newrelic_rpm'
+
 class DescribeAround < Sinatra::Base
   get '/' do
     erb :index
