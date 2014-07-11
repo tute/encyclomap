@@ -14,7 +14,7 @@ Geolocalize =
     if navigator.geolocation
       navigator.geolocation.getCurrentPosition @success, @error
     else
-      @error({ 'code': 'NOT_SUPPORTED' })
+      @error('code': 'NOT_SUPPORTED')
 
   success: (position) ->
     GMap.updateCoords position.coords
@@ -128,7 +128,7 @@ GMap =
   setSize: ->
     $('#map_canvas').css
       width: window.innerWidth - 10
-      height: window.innerHeight
+      height: window.innerHeight + 100
 
 
 Wikimapia =
