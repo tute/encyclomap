@@ -127,8 +127,8 @@ GMap =
   # Leave some space for iPhones to move over the page, and not only the map
   setSize: ->
     $('#map_canvas').css
-      width: window.innerWidth - 20
-      height: window.innerHeight - 100
+      width: window.innerWidth - 10
+      height: window.innerHeight
 
 
 Wikimapia =
@@ -143,10 +143,9 @@ Wikimapia =
     '&count=' + String(count)
 
   getPlaces: ->
-    $.getJSON(@url(), ((data) ->
+    $.getJSON @url(), (data) ->
       Data.wikimapiaPlaces = data.folder
       Wikimapia.draw()
-    ))
 
   draw: ->
     for place in Data.wikimapiaPlaces
