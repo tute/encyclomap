@@ -3,19 +3,53 @@
 <head>
 <meta charset='utf-8'>
 <meta name='viewport' id="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Dynamic Atlas</title>
+<title>encyclomap</title>
 <style type='text/css'>
 body {
   margin: 0;
   padding: 0;
+  background: #eeecec;
   font-family: "Trebuchet MS", Helvetica, sans-serif;
-  text-align: center
 }
 #map_canvas {
+  clear: both;
   min-height: 320px;
 }
-input {
-  font-size: 1.2em;
+
+.emap-blue   { color: #5DBDBE; }
+
+table { width: 99%; }
+td#search {
+  width: 99%;
+}
+td.logo {
+  padding: 15px 7px;
+  vertical-align: top;
+  background: #e2e0e0;
+}
+td.info {
+  padding-left: 7px;
+}
+
+input[type=text] {
+  float: left;
+  position: relative;
+  top: -2px;
+  height: 42px;
+  border: 0;
+  padding: 5px 11px;
+  font-size: 1em;
+  background: #ccc;
+}
+
+/* http://stackoverflow.com/a/18418428 */
+input[type="text"] {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  display: table; /* table-cell is not working well in Chrome for small widths */
+  min-height: inherit;
+  width: 100%;
 }
 </style>
 </head>

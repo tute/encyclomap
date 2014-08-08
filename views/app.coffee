@@ -96,9 +96,8 @@ GMap =
         if status is google.maps.GeocoderStatus.OK
           loc = results[0].geometry.location
           GMap.updateCoords { 'latitude': loc.lat(), 'longitude': loc.lng() }
-          $('#search_status').html ''
         else
-          $('#search_status').html 'Not found, please try other search terms.'
+          alert 'Not found, please try other search terms.'
 
   updateCoords: (coords) ->
     Data.coords = coords
