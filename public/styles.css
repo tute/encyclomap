@@ -6,6 +6,22 @@
     url("/fonts/Lato-Light.woff2") format("woff2"),
     url("/fonts/Lato-Light.woff") format("woff");
 }
+@font-face {
+  font-family: "Lato";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Lato Regular"), local("Lato-Regular"),
+    url("/fonts/Lato-Regular.woff2") format("woff2"),
+    url("/fonts/Lato-Regular.woff") format("woff");
+}
+@font-face {
+  font-family: "Lato";
+  font-style: normal;
+  font-weight: 700;
+  src: local("Lato Bold"), local("Lato-Bold"),
+    url("/fonts/Lato-Bold.woff2") format("woff2"),
+    url("/fonts/Lato-Bold.woff") format("woff");
+}
 
 body {
   margin: 0;
@@ -33,8 +49,13 @@ td.logo {
 }
 td.info {
   padding-left: 7px;
+  padding-bottom: 6em;
 }
 
+/* iOS Safari adds rounded corners */
+input {
+  border-radius: 0;
+}
 input[type=text] {
   float: left;
   position: relative;
