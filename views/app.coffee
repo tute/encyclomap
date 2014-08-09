@@ -8,6 +8,16 @@ Data =
   gmapsPolygons: {}
 
 
+Retina =
+  updateSources: ->
+    return unless window.devicePixelRatio > 1
+    photos = ['back-to-top', 'help', 'logo', 'map-me', 'search']
+    $.each photos, (i, photoName) ->
+      oldSrc = "/images/#{photoName}.png"
+      newSrc = "/images/#{photoName}-retina.png"
+      $("[src='#{oldSrc}']").attr('src', newSrc)
+
+
 # Perform geolocalization, or fallback to default coordinates
 Geolocalize =
   start: ->
@@ -152,6 +162,7 @@ Wikimapia =
 
 
 window.onload = ->
+  Retina.updateSources()
   GMap.draw()
   GMap.setSize()
   Geolocalize.start()
