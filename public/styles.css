@@ -1,0 +1,57 @@
+@font-face {
+  font-family: "Lato";
+  font-style: normal;
+  font-weight: 300;
+  src: local("Lato Light"), local("Lato-Light"),
+    url("/fonts/Lato-Light.woff2") format("woff2"),
+    url("/fonts/Lato-Light.woff") format("woff");
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #eeecec;
+  font-family: 'Lato', sans-serif;
+  font-weight: 300;
+}
+#map_canvas {
+  clear: both;
+  min-height: 320px;
+}
+
+.emap-blue { color: #5DBDBE; }
+
+table { width: 99%; }
+td#search {
+  width: 99%;
+}
+td.logo {
+  width: 1%;
+  padding: 15px 7px;
+  vertical-align: top;
+  background: #e2e0e0;
+}
+td.info {
+  padding-left: 7px;
+}
+
+input[type=text] {
+  float: left;
+  position: relative;
+  top: -1px;
+  height: 42px;
+  border: 0;
+  padding: 5px 11px;
+  font-size: 1em;
+  background: #ccc;
+}
+
+/* http://stackoverflow.com/a/18418428 */
+input[type="text"] {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  display: table; /* table-cell is not working well in Chrome for small widths */
+  min-height: inherit;
+  width: 100%;
+}

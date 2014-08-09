@@ -127,7 +127,7 @@ GMap =
   setSize: ->
     $('#map_canvas').css
       width: window.innerWidth - 10
-      height: window.innerHeight + 100
+      height: window.innerHeight
 
 
 Wikimapia =
