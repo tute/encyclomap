@@ -36,9 +36,11 @@ Geolocalize =
 
 Helpers =
   showInfoWindow: (place, latLng) ->
-    Data.infoWindow.setContent '<strong>' + place.name + '</strong><br>' +
-      '<a href="' + @googleItUrl(place) + '" target="_blank">Google it</a> - ' +
-      '<a href="' + place.url + '" target="_blank">See in Wikimapia</a>'
+    Data.infoWindow.setContent '<strong>' + place.name + '</strong>' +
+      '<br><br>' +
+      '<a href="' + @googleItUrl(place) + '" target="_blank">In Google</a>' +
+      ' &nbsp; – &nbsp; ' +
+      '<a href="' + place.url + '" target="_blank">In Wikimapia</a>'
     Data.infoWindow.setPosition latLng
     Data.infoWindow.open GMap.map_el
 
@@ -122,8 +124,8 @@ GMap =
     @geocoder.geocode latLng: @latLng(), (results, status) ->
       if status is google.maps.GeocoderStatus.OK
         for place in results[0].address_components
-          if GMap.isCity(place['types'][0])
-            Data.cityName = place['long_name']
+          if GMap.isCity(place.types[0])
+            Data.cityName = place.long_name
             return
           null
 

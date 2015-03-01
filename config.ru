@@ -1,9 +1,14 @@
-require 'bundler/setup'
-Bundler.require
+require 'sinatra'
 
-require './app'
-if ENV['RACK_ENV'] == 'production'
-  require './force-domain'
-  use Rack::ForceDomain
+class Encyclomap < Sinatra::Base
+  get '/' do
+    erb :index
+  end
+
+  get '/app.js' do
+    content_type 'text/javascript'
+    coffee :app, no_wrap: true
+  end
 end
-run DescribeAround
+
+run Encyclomap
