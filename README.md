@@ -1,5 +1,10 @@
 # Encyclomap
 
+## Discover the world around you
+
+![encyclomap.com](https://raw.githubusercontent.com/tute/encyclomap/master/public/enyclomap-in-central-park.png)
+
+
 To run this Sinatra app run `rackup` and visit the URL:
 
 ```
