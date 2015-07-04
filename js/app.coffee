@@ -1,3 +1,5 @@
+---
+---
 'use strict'
 
 Data =
@@ -19,7 +21,7 @@ Retina =
 
 
 # Perform geolocalization, or fallback to default coordinates
-Geolocalize =
+window.Geolocalize =
   start: ->
     if navigator.geolocation
       navigator.geolocation.getCurrentPosition @success, @error
@@ -51,7 +53,7 @@ Helpers =
     Data.gmapsPolygons[pol_id].polygon.setOptions { 'fillOpacity': opacity }
 
 
-GMap =
+window.GMap =
   map_el: null
   marker: null
   defaultZoom: 16
