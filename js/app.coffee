@@ -1,3 +1,5 @@
+---
+---
 'use strict'
 
 Data =
@@ -13,13 +15,13 @@ Retina =
     return unless window.devicePixelRatio > 1
     photos = ['back-to-top', 'help', 'logo', 'map-me', 'search']
     $.each photos, (i, photoName) ->
-      oldSrc = "/images/#{photoName}.png"
-      newSrc = "/images/#{photoName}-retina.png"
+      oldSrc = "/encyclomap/images/#{photoName}.png"
+      newSrc = "/encyclomap/images/#{photoName}-retina.png"
       $("[src='#{oldSrc}']").attr('src', newSrc)
 
 
 # Perform geolocalization, or fallback to default coordinates
-Geolocalize =
+window.Geolocalize =
   start: ->
     if navigator.geolocation
       navigator.geolocation.getCurrentPosition @success, @error
@@ -51,7 +53,7 @@ Helpers =
     Data.gmapsPolygons[pol_id].polygon.setOptions { 'fillOpacity': opacity }
 
 
-GMap =
+window.GMap =
   map_el: null
   marker: null
   defaultZoom: 16

@@ -1,17 +1,15 @@
-# Encyclomap
+# encyclomap
 
 ## Discover the world around you
 
-![encyclomap.com](https://raw.githubusercontent.com/tute/encyclomap/master/public/enyclomap-in-central-park.png)
+<img src="https://raw.githubusercontent.com/tute/encyclomap/master/images/enyclomap-in-central-park.png">
 
-
-To run this Sinatra app run `rackup` and visit the URL:
+To run this Jekyll app run `jekyll serve` and visit the URL:
 
 ```
-$ rackup
-Thin web server (v1.6.2 codename Doc Brown)
-Maximum connections set to 1024
-Listening on localhost:9292, CTRL+C to stop
+$ jekyll serve
+    Generating... done.
+    Server address: http://127.0.0.1:4000/
 ```
 
 
