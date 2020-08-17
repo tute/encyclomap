@@ -3,7 +3,7 @@ title: encyclomap
 email: tutecosta@protonmail.com
 description: "Discover the world around you"
 baseurl: "" # the subpath of your site, e.g. /blog/
-url: "http://www.encyclomap.com/" # the base hostname & protocol for your site
+url: "https://tute.github.io/encyclomap" # the base hostname & protocol for your site
 twitter_username: tutec
 github_username: tute
 
