@@ -1,9 +1,9 @@
 # Site settings
 title: encyclomap
-email: tutecosta@protonmail.com
+email: tutecosta@gmail.com
 description: "Discover the world around you"
-baseurl: "" # the subpath of your site, e.g. /blog/
-url: "https://tute.github.io/encyclomap" # the base hostname & protocol for your site
+baseurl: "/encyclomap/"
+url: "https://www.tutecosta.com" # the base hostname & protocol for your site
 twitter_username: tutec
 github_username: tute
 

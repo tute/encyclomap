@@ -182,15 +182,16 @@
   };
 
   Wikimapia = {
-    key: 'C0365FB4-6B9AAA6F-9816D3DE-1ABEA4F3-D50712FD-A634D22B-25FA389F-5608B539',
+    // key: 'C0365FB4-6B9AAA6F-9816D3DE-1ABEA4F3-D50712FD-A634D22B-25FA389F-5608B539',
+    key: 'C0365FB4-18F780A5-0A8C5B5B-364CF187-0C128B10-9F6A2A88-D4187C26-EAD8434B',
     url: function(count, radius) {
       if (count == null) {
-        count = 40;
+        count = 100;
       }
       if (radius == null) {
         radius = 0.0032;
       }
-      return 'http://api.wikimapia.org/?function=box&format=json&key=' + this.key + '&lat_min=' + String(Data.coords.latitude - radius) + '&lat_max=' + String(Data.coords.latitude + radius) + '&lon_min=' + String(Data.coords.longitude - radius) + '&lon_max=' + String(Data.coords.longitude + radius) + '&count=' + String(count);
+      return 'https://withatwist.dev/encyclomap/?function=box&format=json&key=' + this.key + '&lat_min=' + String(Data.coords.latitude - radius) + '&lat_max=' + String(Data.coords.latitude + radius) + '&lon_min=' + String(Data.coords.longitude - radius) + '&lon_max=' + String(Data.coords.longitude + radius) + '&count=' + String(count);
     },
     getPlaces: function() {
       return $.getJSON(this.url(), function(data) {
